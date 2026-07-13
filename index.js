@@ -239,5 +239,22 @@ const PRIVACY_POLICY_HTML = `<!DOCTYPE html>
 </body>
 </html>`;
 
+// Catch-all error handler. Without this, errors thrown by middleware before
+// a route runs (e.g. express.json() rejecting an oversized or malformed
+// body) fall through to Express's default handler, which sends a plain-text
+// or HTML error page — the mobile app always expects JSON and crashes with a
+// confusing "JSON Parse error" when it gets one of those instead. This
+// guarantees every response, success or failure, is valid JSON.
+app.use((err, req, res, next) => {
+  console.error('Unhandled error:', err);
+  if (err.type === 'entity.too.large' || err.status === 413) {
+    return res.status(413).json({ error: 'Image too large. Try a smaller or more compressed photo.' });
+  }
+  if (err.type === 'entity.parse.failed' || err instanceof SyntaxError) {
+    return res.status(400).json({ error: 'Malformed request.' });
+  }
+  res.status(err.status || 500).json({ error: 'Internal server error' });
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`ExpiryOS backend running on port ${PORT}`));
