@@ -11,10 +11,12 @@ const APP_SECRET = process.env.APP_SECRET; // shared secret the mobile app must 
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || ''; // optional web origin (e.g. https://expiryos.app)
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
 const CHAT_MODEL = 'openrouter/auto';
-// Qwen2.5-VL is specifically tuned for documents, receipts, and invoices
-// (strong on OCRBench/DocVQA), unlike a general-purpose vision model — meaningfully
-// better accuracy for this app's exact use case at a similar cost.
-const VISION_MODEL = 'qwen/qwen2.5-vl-7b-instruct';
+// Qwen's vision-language line is specifically strong on documents, receipts,
+// and invoices (OCRBench/DocVQA), unlike a general-purpose vision model.
+// Verified against OpenRouter's live /api/v1/models list before using —
+// older/newer Qwen VL model slugs come and go, so don't hardcode one without
+// checking it actually exists first.
+const VISION_MODEL = 'qwen/qwen3-vl-8b-instruct';
 
 if (!OPENROUTER_KEY) {
   console.error('FATAL: OPENROUTER_KEY is not set. Refusing to start.');
