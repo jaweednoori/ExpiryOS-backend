@@ -164,6 +164,42 @@ app.post('/scan', requireAppKey, async (req, res) => {
   }
 });
 
+// Text-only counterpart to /scan — used when the app already extracted text
+// from the document on-device (see lib/ocr.js client-side), so no photo is
+// ever uploaded for this path. Uses the cheap text model instead of a vision
+// model, since there's no image involved.
+app.post('/scan-text', requireAppKey, async (req, res) => {
+  try {
+    const { prompt } = req.body || {};
+    if (typeof prompt !== 'string' || prompt.length === 0 || prompt.length > MAX_CONTENT_CHARS) {
+      return res.status(400).json({ error: 'Invalid prompt.' });
+    }
+
+    const response = await fetch(OPENROUTER_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${OPENROUTER_KEY}`,
+        'HTTP-Referer': 'https://expiryos.app',
+        'X-Title': 'ExpiryOS',
+      },
+      body: JSON.stringify({
+        model: CHAT_MODEL,
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: 512,
+        // AI governance: only route to providers with zero data retention.
+        // See MONETIZATION.md / AI_PRIVACY.md for the full data-handling policy.
+        provider: { data_collection: 'deny' },
+      }),
+    });
+    const data = await response.json();
+    res.status(response.ok ? 200 : 502).json(data);
+  } catch (e) {
+    console.error('POST /scan-text error:', e);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', app: 'ExpiryOS backend' });
 });
