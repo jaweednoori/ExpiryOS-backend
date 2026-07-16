@@ -257,7 +257,7 @@ const PRIVACY_POLICY_HTML = `<!DOCTYPE html>
   <p>The AI assistant chat and document scan are optional, paid features. When used:</p>
   <ul>
     <li><strong>Chat</strong> sends your message and a summary of your reminders (name, category, due date, status; also amounts, issuers, and notes if Private Mode is off) to our backend, which forwards it to an AI model via OpenRouter.</li>
-    <li><strong>Document scan</strong> sends a photo of the scanned document so its details can be read.</li>
+    <li><strong>Document scan</strong> reads the document's text on your device first. In most cases, only that extracted text is sent for processing — never the photo itself. Before sending, we also strip any Social Security Number or credit/debit card number found in the text, directly on your device. The photo is only uploaded if on-device text recognition can't read enough of the document (e.g. a blurry photo).</li>
     <li>Every request is configured with OpenRouter's zero-data-retention setting, routed only to providers that do not store or train on the content.</li>
     <li>Our backend does not log or store chat messages or document photos — it forwards requests and returns responses.</li>
   </ul>
