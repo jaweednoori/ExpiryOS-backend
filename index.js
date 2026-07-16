@@ -222,6 +222,11 @@ app.get('/privacy', (req, res) => {
   res.type('html').send(PRIVACY_POLICY_HTML);
 });
 
+// Public support page — required by Apple's App Store Connect "Support URL" field.
+app.get('/support', (req, res) => {
+  res.type('html').send(SUPPORT_PAGE_HTML);
+});
+
 const PRIVACY_POLICY_HTML = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -287,6 +292,53 @@ const PRIVACY_POLICY_HTML = `<!DOCTYPE html>
 
   <h2>Contact</h2>
   <p>Questions about this policy: <a href="mailto:aiylainnovation@gmail.com">aiylainnovation@gmail.com</a></p>
+</body>
+</html>`;
+
+const SUPPORT_PAGE_HTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Support — Expiry</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 700px; margin: 0 auto; padding: 48px 24px 80px; line-height: 1.6; color: #1C1430; background: #FBF7F2; }
+  h1 { font-size: 28px; margin-bottom: 4px; }
+  .updated { color: #6a5f7a; font-size: 14px; margin-bottom: 32px; }
+  h2 { font-size: 19px; margin-top: 36px; color: #FF3D6E; }
+  p, li { font-size: 15.5px; }
+  a { color: #FF3D6E; }
+  ul { padding-left: 20px; }
+</style>
+</head>
+<body>
+  <h1>Support</h1>
+  <div class="updated">Expiry, by AIyla</div>
+
+  <p>Need help with Expiry? Start here, or reach out directly &mdash; we usually reply within a day or two.</p>
+
+  <h2>Contact</h2>
+  <p><a href="mailto:aiylainnovation@gmail.com">aiylainnovation@gmail.com</a></p>
+
+  <h2>Common questions</h2>
+
+  <p><strong>How do I add a reminder?</strong><br>
+  Tap the "+" button on the home screen. You can fill in the details manually, or use "Scan & create" to point your camera at a document and have Expiry read the details for you.</p>
+
+  <p><strong>Why didn't scanning fill in all the fields?</strong><br>
+  Scan accuracy depends on how clearly the document's text is printed or written. You can always edit any field afterward.</p>
+
+  <p><strong>How do recurring reminders work?</strong><br>
+  Mark a reminder as recurring and choose an interval (weekly, monthly, yearly). Once it's marked done, Expiry automatically creates the next occurrence.</p>
+
+  <p><strong>How do I restore a purchase or fix a subscription issue?</strong><br>
+  Go to Settings &rarr; Subscription &rarr; Restore Purchases. If it still looks wrong, email us with your purchase date and we'll help sort it out.</p>
+
+  <p><strong>How do I delete my data?</strong><br>
+  Everything in Expiry is stored on your device. Delete a reminder from within the app, or uninstall the app to remove everything at once.</p>
+
+  <p><strong>Is my data private?</strong><br>
+  Yes &mdash; see our <a href="/privacy">Privacy Policy</a> for the full details on what's stored on-device versus sent to AI features (Plus only).</p>
 </body>
 </html>`;
 
