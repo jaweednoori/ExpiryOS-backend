@@ -11,6 +11,12 @@ const APP_SECRET = process.env.APP_SECRET; // shared secret the mobile app must 
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || ''; // optional web origin (e.g. https://expiryos.app)
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
 const CHAT_MODEL = 'openrouter/auto';
+// /scan-text needs a model that reliably returns just the requested JSON
+// within a small token budget. 'openrouter/auto' is unpredictable here — it
+// can route to a reasoning model that burns most of the token budget on
+// hidden chain-of-thought before writing the actual answer, truncating the
+// JSON. Pinned to a plain instruct model with no reasoning tier instead.
+const SCAN_TEXT_MODEL = 'openai/gpt-5.4-mini';
 // Qwen's vision-language line is specifically strong on documents, receipts,
 // and invoices (OCRBench/DocVQA), unlike a general-purpose vision model.
 // Verified against OpenRouter's live /api/v1/models list before using —
@@ -150,7 +156,8 @@ app.post('/scan', requireAppKey, async (req, res) => {
             ],
           },
         ],
-        max_tokens: 512,
+        // Same 16-field schema as /scan-text — 512 was too tight.
+        max_tokens: 1024,
         // AI governance: only route to providers with zero data retention.
         // See MONETIZATION.md / AI_PRIVACY.md for the full data-handling policy.
         provider: { data_collection: 'deny' },
@@ -184,9 +191,12 @@ app.post('/scan-text', requireAppKey, async (req, res) => {
         'X-Title': 'ExpiryOS',
       },
       body: JSON.stringify({
-        model: CHAT_MODEL,
+        model: SCAN_TEXT_MODEL,
         messages: [{ role: 'user', content: prompt }],
-        max_tokens: 512,
+        // Larger budget than /chat since the scan JSON schema has 16 fields
+        // plus a summary sentence — 512 was too tight even without reasoning
+        // tokens involved.
+        max_tokens: 1024,
         // AI governance: only route to providers with zero data retention.
         // See MONETIZATION.md / AI_PRIVACY.md for the full data-handling policy.
         provider: { data_collection: 'deny' },
